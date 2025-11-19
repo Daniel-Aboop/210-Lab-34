@@ -4,6 +4,8 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <limits>
+#include <algorithm>
 using namespace std;
 const int SIZE=13;
 struct Edge {
@@ -102,6 +104,47 @@ public:
         }
         cout << endl;
     }
+    void shortestPath(int start, int end) {
+        vector<int> dist(SIZE, numeric_limits<int>::max());
+        vector<int> prev(SIZE, -1);
+        dist[start] = 0;
+
+        // Min-heap priority queue: {distance, node}
+        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
+        pq.push({0, start});
+
+        while (!pq.empty()) {
+            int u = pq.top().second;
+            int d = pq.top().first;
+            pq.pop();
+
+            if (d > dist[u]) continue;
+
+            for (auto &neighbor : adjList[u]) {
+                int v = neighbor.first;
+                int w = neighbor.second;
+                if (dist[u] + w < dist[v]) {
+                    dist[v] = dist[u] + w;
+                    prev[v] = u;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+
+        // Reconstruct path
+        vector<int> path;
+        for (int at = end; at != -1; at = prev[at])
+            path.push_back(at);
+        reverse(path.begin(), path.end());
+
+        cout << "Shortest path from " << stationNames[start] << " to " 
+             << stationNames[end] << ":\n";
+        for (size_t i = 0; i < path.size(); i++) {
+            cout << stationNames[path[i]];
+            if (i != path.size()-1) cout << " → ";
+        }
+        cout << "\nTotal distance: " << dist[end] << " km\n\n";
+    }
 };
 int main() {
         // number -> goes to number ( has value)
@@ -115,7 +158,7 @@ int main() {
     graph.printNetwork();
     graph.DFS(0);
     graph.BFS(0);
-
+    graph.shortestPath(0,12);
 
     return 0;
 }
