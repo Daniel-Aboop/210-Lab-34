@@ -6,6 +6,7 @@
 #include <stack>
 #include <limits>
 #include <algorithm>
+#include <tuple>
 using namespace std;
 const int SIZE=13;
 struct Edge {
