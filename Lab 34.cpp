@@ -27,7 +27,6 @@ public:
             "Museum", "Stadium"
         };
 
-        // Add edges
         for (auto &edge : edges) {
             int src = edge.src;
             int dest = edge.dest;
@@ -38,30 +37,12 @@ public:
     }
 
     void printNetwork() {
+        cout << "Train Network Topology:\n================================\n";
         for (int i = 0; i < adjList.size(); i++) {
-            cout << stationNames[i] << " connects to: ";
-            for (Pair v : adjList[i])
-                cout << "(" << stationNames[v.first] << ", " << v.second << " km) ";
-            cout << endl;
-        }
-    }
-
-    void BFS(int start) {
-        vector<bool> visited(SIZE, false);
-        queue<int> q;
-        visited[start] = true;
-        q.push(start);
-
-        cout << "BFS from " << stationNames[start] << ": ";
-        while (!q.empty()) {
-            int node = q.front(); q.pop();
-            cout << stationNames[node] << " ";
-
-            for (auto &neighbor : adjList[node]) {
-                if (!visited[neighbor.first]) {
-                    visited[neighbor.first] = true;
-                    q.push(neighbor.first);
-                }
+            cout << "Station " << i << " (" << stationNames[i] << ") connects to:\n";
+            for (Pair v : adjList[i]) {
+                cout << "  → Station " << v.first << " (" << stationNames[v.first] << ") - Distance: " 
+                     << v.second << " km\n";
             }
         }
         cout << endl;
@@ -72,15 +53,50 @@ public:
         stack<int> s;
         s.push(start);
 
-        cout << "DFS from " << stationNames[start] << ": ";
+        cout << "Network Trace (DFS) from Station " << start << " (" 
+             << stationNames[start] << "):\n";
+        cout << "Purpose: Exploring possible routes through the network\n";
+        cout << "=======================================\n";
+
         while (!s.empty()) {
             int node = s.top(); s.pop();
             if (!visited[node]) {
                 visited[node] = true;
-                cout << stationNames[node] << " ";
+                cout << "Inspecting Station " << node << " (" << stationNames[node] << ")\n";
                 for (auto &neighbor : adjList[node]) {
-                    if (!visited[neighbor.first])
+                    if (!visited[neighbor.first]) {
+                        cout << "  → Potential travel to Station " << neighbor.first
+                             << " (" << stationNames[neighbor.first] << ") - Distance: "
+                             << neighbor.second << " km\n";
                         s.push(neighbor.first);
+                    }
+                }
+            }
+        }
+        cout << endl;
+    }
+
+    void BFS(int start) {
+        vector<bool> visited(SIZE, false);
+        queue<int> q;
+        visited[start] = true;
+        q.push(start);
+
+        cout << "Layer-by-Layer Network Inspection (BFS) from Station " 
+             << start << " (" << stationNames[start] << "):\n";
+        cout << "Purpose: Analyzing stations by distance from start\n";
+        cout << "=======================================\n";
+
+        while (!q.empty()) {
+            int node = q.front(); q.pop();
+            cout << "Checking Station " << node << " (" << stationNames[node] << ")\n";
+            for (auto &neighbor : adjList[node]) {
+                if (!visited[neighbor.first]) {
+                    visited[neighbor.first] = true;
+                    cout << "  → Next reachable station: " << neighbor.first
+                         << " (" << stationNames[neighbor.first] << ") - Distance: "
+                         << neighbor.second << " km\n";
+                    q.push(neighbor.first);
                 }
             }
         }
