@@ -5,7 +5,7 @@
 #include <queue>
 #include <stack>
 using namespace std;
-const int SIZE=7;
+const int SIZE=11;
 struct Edge {
     int src, dest, weight;
 };
