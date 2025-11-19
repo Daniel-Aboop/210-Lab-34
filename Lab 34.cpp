@@ -205,11 +205,51 @@ int main() {
     };
     // Creates graph
     Graph graph(edges);
-    graph.printNetwork();
-    graph.DFS(0);
-    graph.BFS(0);
-    graph.shortestPath(0,12);
-    graph.minimumSpanningTree();
+    int choice;
+    do {
+        cout << "================ Train Network Menu ================\n";
+        cout << "1. Print Train Network\n";
+        cout << "2. BFS Traversal\n";
+        cout << "3. DFS Traversal\n";
+        cout << "4. Shortest Path between Stations\n";
+        cout << "5. Minimum Spanning Tree (MST)\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        int start, end;
+        switch(choice){
+            case 1: 
+                graph.printNetwork(); 
+                break;
+            case 2:
+                cout << "Enter starting station index (0-" << SIZE-1 << "): ";
+                cin >> start;
+                graph.BFS(start); 
+                break;
+            case 3:
+                cout << "Enter starting station index (0-" << SIZE-1 << "): ";
+                cin >> start;
+                graph.DFS(start); 
+                break;
+            case 4:
+                cout << "Enter starting station index (0-" << SIZE-1 << "): ";
+                cin >> start;
+                cout << "Enter ending station index (0-" << SIZE-1 << "): ";
+                cin >> end;
+                graph.shortestPath(start,end); 
+                break;
+            case 5:
+                graph.minimumSpanningTree(); 
+                break;
+            case 6:
+                cout << "Exiting...\n"; 
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+
+    } while(choice != 6);
 
     return 0;
 }
