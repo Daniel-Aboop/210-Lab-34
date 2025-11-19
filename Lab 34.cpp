@@ -11,7 +11,28 @@ const int SIZE=13;
 struct Edge {
     int src, dest, weight;
 };
-
+struct DSU {
+    vector<int> parent, rank;
+    DSU(int n) {
+        parent.resize(n);
+        rank.resize(n, 0);
+        for(int i=0;i<n;i++) parent[i] = i;
+    }
+    int find(int x) {
+        if(parent[x] != x) parent[x] = find(parent[x]);
+        return parent[x];
+    }
+    void unite(int x, int y) {
+        int px = find(x), py = find(y);
+        if(px == py) return;
+        if(rank[px] < rank[py]) parent[px] = py;
+        else if(rank[px] > rank[py]) parent[py] = px;
+        else {
+            parent[py] = px;
+            rank[px]++;
+        }
+    }
+};
 typedef pair<int, int> Pair;  // Creates an alias 'Pair' for the pair<int,int> data type
                               // so below we can use vector<Pair> rather than vector<pair<int, int>>
 class Graph {
@@ -145,6 +166,34 @@ public:
         }
         cout << "\nTotal distance: " << dist[end] << " km\n\n";
     }
+     void minimumSpanningTree() {
+        cout << "Minimum Spanning Tree (MST) of the Train Network:\n";
+        cout << "Purpose: Connecting all stations with minimum total distance\n";
+        cout << "====================================================\n";
+
+        // Collect all edges
+        vector<tuple<int,int,int>> edges;
+        for(int u=0; u<SIZE; u++){
+            for(Pair p: adjList[u]){
+                int v = p.first, w = p.second;
+                if(u < v) edges.push_back({w,u,v}); // avoid duplicates
+            }
+        }
+
+        // Sort edges by weight
+        sort(edges.begin(), edges.end());
+
+        DSU dsu(SIZE);
+        int totalDistance = 0;
+        for(auto &[w,u,v] : edges){
+            if(dsu.find(u) != dsu.find(v)){
+                dsu.unite(u,v);
+                cout << "Connect " << stationNames[u] << " → " << stationNames[v] << " (Distance: " << w << " km)\n";
+                totalDistance += w;
+            }
+        }
+        cout << "Total distance of MST: " << totalDistance << " km\n\n";
+    }
 };
 int main() {
         // number -> goes to number ( has value)
@@ -159,6 +208,7 @@ int main() {
     graph.DFS(0);
     graph.BFS(0);
     graph.shortestPath(0,12);
+    graph.minimumSpanningTree();
 
     return 0;
 }
