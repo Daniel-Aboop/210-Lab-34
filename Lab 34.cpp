@@ -14,39 +14,48 @@ typedef pair<int, int> Pair;  // Creates an alias 'Pair' for the pair<int,int> d
                               // so below we can use vector<Pair> rather than vector<pair<int, int>>
 class Graph {
 public:
-    // a vector of vectors of Pairs to represent an adjacency list
     vector<vector<Pair>> adjList;
-    // constructor
+    vector<string> stationNames;
+
     Graph(vector<Edge> const &edges) {
-        // resize the vector to hold SIZE elements of type vector<Edge>
         adjList.resize(SIZE);
-        // add edges to the directed graph
-        for (auto &edge: edges) {
+
+        // Assign station names
+        stationNames = {
+            "Central", "North", "East", "West", "South", "Airport",
+            "Harbor", "Uptown", "Downtown", "Suburb", "TechPark",
+            "Museum", "Stadium"
+        };
+
+        // Add edges
+        for (auto &edge : edges) {
             int src = edge.src;
             int dest = edge.dest;
             int weight = edge.weight;
-            adjList[src].push_back(make_pair(dest, weight));
-            adjList[dest].push_back(make_pair(src, weight));
+            adjList[src].push_back({dest, weight});
+            adjList[dest].push_back({src, weight}); // undirected
         }
     }
-    void printGraph() {
+
+    void printNetwork() {
         for (int i = 0; i < adjList.size(); i++) {
-            cout<<i<<"-->";
-            for (Pair v: adjList[i])
-                cout << "("<< v.first << ", " << v.second << ") ";
+            cout << stationNames[i] << " connects to: ";
+            for (Pair v : adjList[i])
+                cout << "(" << stationNames[v.first] << ", " << v.second << " km) ";
             cout << endl;
         }
     }
-    void BFS(int start){
+
+    void BFS(int start) {
         vector<bool> visited(SIZE, false);
         queue<int> q;
         visited[start] = true;
         q.push(start);
 
-        cout << "BFS starting from node " << start << ": "<<endl;
+        cout << "BFS from " << stationNames[start] << ": ";
         while (!q.empty()) {
             int node = q.front(); q.pop();
-            cout << node << " ";
+            cout << stationNames[node] << " ";
 
             for (auto &neighbor : adjList[node]) {
                 if (!visited[neighbor.first]) {
@@ -57,17 +66,18 @@ public:
         }
         cout << endl;
     }
+
     void DFS(int start) {
         vector<bool> visited(SIZE, false);
         stack<int> s;
         s.push(start);
 
-        cout << "DFS starting from node " << start << ": "<<endl;
+        cout << "DFS from " << stationNames[start] << ": ";
         while (!s.empty()) {
             int node = s.top(); s.pop();
             if (!visited[node]) {
                 visited[node] = true;
-                cout << node << " ";
+                cout << stationNames[node] << " ";
                 for (auto &neighbor : adjList[node]) {
                     if (!visited[neighbor.first])
                         s.push(neighbor.first);
@@ -78,6 +88,7 @@ public:
     }
 };
 int main() {
+        // number -> goes to number ( has value)
       vector<Edge> edges = {
         // (x, y, w) —> edge from x to y having weight w
         {0,3,21},{2,3,6},{2,6,2},{5,6,6},{4,5,9},{2,4,4},{2,5,5},
@@ -85,9 +96,9 @@ int main() {
     };
     // Creates graph
     Graph graph(edges);
-    graph.printGraph();
-    graph.DFS(2);
-    graph.BFS(2);
+    graph.printNetwork();
+    graph.DFS(0);
+    graph.BFS(0);
 
 
     return 0;
